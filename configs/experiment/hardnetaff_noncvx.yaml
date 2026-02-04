@@ -1,0 +1,13 @@
+# @package _global_
+# HardNetAff baseline for Non-convex dataset
+# Usage: python3 run_experiment.py +experiment=hardnetaff_noncvx dataset=noncvx model=hardnetaff
+
+epochs: 2000
+batch_size: 200
+learning_rate: 0.0001
+
+soft_epochs: 100
+soft_weight: 10
+
+model:
+  hidden_size: 200

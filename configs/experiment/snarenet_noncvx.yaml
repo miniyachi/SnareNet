@@ -1,0 +1,14 @@
+# @package _global_
+# SnareNet for Non-convex dataset
+# Usage: python3 run_experiment.py +experiment=snarenet_noncvx dataset=noncvx model=snarenet
+
+epochs: 2000
+batch_size: 200
+learning_rate: 0.0001
+
+model:
+  lambd: 0.01
+  trust_region: false
+  adaptive_relaxation: true
+  decay_epochs: 500
+  decay_schedule: linear

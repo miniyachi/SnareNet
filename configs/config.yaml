@@ -1,0 +1,33 @@
+# Main configuration file for HardConstrainedNN experiments
+
+defaults:
+  - model:
+  - dataset:
+  - _self_
+
+# Experiment settings
+seed: 123
+wandb_project:
+wandb_name: 
+save_all_stats: true
+results_save_freq: 100
+eval_freq: 1
+profiling: false  # Enable PyTorch profiler
+
+# Training parameters
+epochs: 2000
+batch_size: 100
+learning_rate: 0.0001  # 1e-4
+
+# Soft Epoch settings
+soft_epochs: 0  # Number of epochs with soft constraints before hard projection
+soft_weight: 10  # Weight for soft constraint violations
+
+# Hydra output management
+hydra:
+  run:
+    dir: outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}
+  sweep:
+    dir: multirun/${now:%Y-%m-%d}/${now:%H-%M-%S}
+    subdir: ${hydra.job.num}
+

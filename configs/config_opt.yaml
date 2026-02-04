@@ -1,0 +1,20 @@
+# Configuration file for optimizer baseline
+
+defaults:
+  - model: optimizer
+  - dataset: cvx_qcqp
+  - _self_
+
+# Experiment settings
+seed: 123
+save_solutions: false  # Set to true to save raw solution arrays
+wandb_project:
+wandb_name:
+
+# Hydra output management
+hydra:
+  run:
+    dir: outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}
+  sweep:
+    dir: multirun/${now:%Y-%m-%d}/${now:%H-%M-%S}
+    subdir: ${hydra.job.num}

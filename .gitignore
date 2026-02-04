@@ -1,0 +1,23 @@
+__pycache__/
+.venv/
+venv/
+*.npz
+dc3_env/
+hn_env/
+test_req/
+
+
+artifacts/*
+results/*
+outputs/*
+wandb/*
+figures/*.png
+
+old_results/*
+datasets/cvx_qcqp/cls_*
+
+for_hproj/logs/*
+for_hproj/outputs/*
+for_hproj/wandb/*
+
+datasets/*  # remove this later

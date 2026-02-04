@@ -1,0 +1,28 @@
+# SnareNet model configuration
+name: snarenet
+
+# Network architecture
+hidden_size: 200
+num_hidden_layers: 2
+dropout: 0.2
+use_batch_norm: true
+
+# Newton method parameters
+use_projection: true
+newton_maxiter: 100
+rtol: 1.0e-8
+
+# Lambda regularization
+lambd: 1e-2  # Regularization parameter for Newton step
+
+# Trust region
+trust_region: false  # Enable trust region for stability
+
+# Adaptive relaxation
+adaptive_relaxation: true  # Use a shrinking feasible set
+decay_epochs: 500  # Number of epochs to decay epsilon (default: (nepochs - soft_epochs) // 2)
+decay_schedule: linear  # Decay schedule: 'linear' or 'harmonic'
+
+# Conjugate Gradient
+is_cg: false  # Use CG (true) or pseudo-inverse (false) for Newton step
+cg_maxiter: 10  # Maximum CG iterations

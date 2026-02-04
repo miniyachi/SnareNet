@@ -1,0 +1,11 @@
+# HardNet-Aff model configuration
+# Default arguments from hardnet_repo/default_args.py::hardnetAff_default_args
+name: hardnetaff
+
+# Network architecture
+hidden_size: 200
+
+# Adaptive relaxation
+adaptive_relaxation: false  # Use a shrinking feasible set
+decay_epochs: 500  # Number of epochs to decay epsilon (default: (nepochs - soft_epochs) // 2)
+decay_schedule: linear  # Decay schedule: 'linear' or 'harmonic'

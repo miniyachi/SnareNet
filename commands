@@ -1,0 +1,33 @@
+CUDA_VISIBLE_DEVICES=0 python3 run_optimizer.py +experiment=opt_cvx_qcqp dataset=cvx_qcqp dataset.num_ineq=100 wandb_project=cvx_qcqp_ineq100_Feb03
+CUDA_VISIBLE_DEVICES=0 python3 run_experiment.py +experiment=dc3_cvx_qcqp model=dc3 dataset=cvx_qcqp dataset.num_ineq=100 seed=456 wandb_project=cvx_qcqp_ineq100_Feb03
+CUDA_VISIBLE_DEVICES=0 python3 run_experiment.py +experiment=dc3_cvx_qcqp model=dc3 dataset=cvx_qcqp dataset.num_ineq=100 seed=112 wandb_project=cvx_qcqp_ineq100_Feb03
+CUDA_VISIBLE_DEVICES=0 python3 run_experiment.py +experiment=dc3_cvx_qcqp model=dc3 dataset=cvx_qcqp dataset.num_ineq=100 seed=123 wandb_project=cvx_qcqp_ineq100_Feb03
+CUDA_VISIBLE_DEVICES=0 python3 run_experiment.py +experiment=dc3_cvx_qcqp model=dc3 dataset=cvx_qcqp dataset.num_ineq=100 seed=789 wandb_project=cvx_qcqp_ineq100_Feb03
+CUDA_VISIBLE_DEVICES=0 python3 run_experiment.py +experiment=dc3_cvx_qcqp model=dc3 dataset=cvx_qcqp dataset.num_ineq=100 seed=101 wandb_project=cvx_qcqp_ineq100_Feb03
+CUDA_VISIBLE_DEVICES=0 python3 run_experiment.py +experiment=snarenet_cvx_qcqp dataset=cvx_qcqp model=snarenet seed=456 wandb_project=cvx_qcqp_ineq100_Feb03
+CUDA_VISIBLE_DEVICES=0 python3 run_experiment.py +experiment=snarenet_cvx_qcqp dataset=cvx_qcqp model=snarenet seed=112 wandb_project=cvx_qcqp_ineq100_Feb03
+CUDA_VISIBLE_DEVICES=0 python3 run_experiment.py +experiment=snarenet_cvx_qcqp dataset=cvx_qcqp model=snarenet seed=123 wandb_project=cvx_qcqp_ineq100_Feb03
+CUDA_VISIBLE_DEVICES=0 python3 run_experiment.py +experiment=snarenet_cvx_qcqp dataset=cvx_qcqp model=snarenet seed=789 wandb_project=cvx_qcqp_ineq100_Feb03
+CUDA_VISIBLE_DEVICES=0 python3 run_experiment.py +experiment=snarenet_cvx_qcqp dataset=cvx_qcqp model=snarenet seed=101 wandb_project=cvx_qcqp_ineq100_Feb03
+CUDA_VISIBLE_DEVICES=0 python3 run_optimizer.py +experiment=opt_cvx_qcqp dataset=cvx_qcqp dataset.num_ineq=50 wandb_project=cvx_qcqp_ineq50_Feb03
+CUDA_VISIBLE_DEVICES=0 python3 run_experiment.py +experiment=dc3_cvx_qcqp model=dc3 dataset=cvx_qcqp dataset.num_ineq=50 seed=456 wandb_project=cvx_qcqp_ineq50_Feb03
+CUDA_VISIBLE_DEVICES=0 python3 run_experiment.py +experiment=dc3_cvx_qcqp model=dc3 dataset=cvx_qcqp dataset.num_ineq=50 seed=112 wandb_project=cvx_qcqp_ineq50_Feb03
+CUDA_VISIBLE_DEVICES=0 python3 run_experiment.py +experiment=dc3_cvx_qcqp model=dc3 dataset=cvx_qcqp dataset.num_ineq=50 seed=123 wandb_project=cvx_qcqp_ineq50_Feb03
+CUDA_VISIBLE_DEVICES=0 python3 run_experiment.py +experiment=dc3_cvx_qcqp model=dc3 dataset=cvx_qcqp dataset.num_ineq=50 seed=789 wandb_project=cvx_qcqp_ineq50_Feb03
+CUDA_VISIBLE_DEVICES=0 python3 run_experiment.py +experiment=dc3_cvx_qcqp model=dc3 dataset=cvx_qcqp dataset.num_ineq=50 seed=101 wandb_project=cvx_qcqp_ineq50_Feb03
+CUDA_VISIBLE_DEVICES=0 python3 run_experiment.py +experiment=snarenet_cvx_qcqp dataset=cvx_qcqp model=snarenet seed=456 wandb_project=cvx_qcqp_ineq50_Feb03
+CUDA_VISIBLE_DEVICES=0 python3 run_experiment.py +experiment=snarenet_cvx_qcqp dataset=cvx_qcqp model=snarenet seed=112 wandb_project=cvx_qcqp_ineq50_Feb03
+CUDA_VISIBLE_DEVICES=0 python3 run_experiment.py +experiment=snarenet_cvx_qcqp dataset=cvx_qcqp model=snarenet seed=123 wandb_project=cvx_qcqp_ineq50_Feb03
+CUDA_VISIBLE_DEVICES=0 python3 run_experiment.py +experiment=snarenet_cvx_qcqp dataset=cvx_qcqp model=snarenet seed=789 wandb_project=cvx_qcqp_ineq50_Feb03
+CUDA_VISIBLE_DEVICES=0 python3 run_experiment.py +experiment=snarenet_cvx_qcqp dataset=cvx_qcqp model=snarenet seed=101 wandb_project=cvx_qcqp_ineq50_Feb03
+CUDA_VISIBLE_DEVICES=0 python3 run_optimizer.py +experiment=opt_cvx_qcqp dataset=cvx_qcqp dataset.num_ineq=10 wandb_project=cvx_qcqp_ineq10_Feb03
+CUDA_VISIBLE_DEVICES=0 python3 run_experiment.py +experiment=dc3_cvx_qcqp model=dc3 dataset=cvx_qcqp dataset.num_ineq=10 seed=456 wandb_project=cvx_qcqp_ineq10_Feb03
+CUDA_VISIBLE_DEVICES=0 python3 run_experiment.py +experiment=dc3_cvx_qcqp model=dc3 dataset=cvx_qcqp dataset.num_ineq=10 seed=112 wandb_project=cvx_qcqp_ineq10_Feb03
+CUDA_VISIBLE_DEVICES=0 python3 run_experiment.py +experiment=dc3_cvx_qcqp model=dc3 dataset=cvx_qcqp dataset.num_ineq=10 seed=123 wandb_project=cvx_qcqp_ineq10_Feb03
+CUDA_VISIBLE_DEVICES=0 python3 run_experiment.py +experiment=dc3_cvx_qcqp model=dc3 dataset=cvx_qcqp dataset.num_ineq=10 seed=789 wandb_project=cvx_qcqp_ineq10_Feb03
+CUDA_VISIBLE_DEVICES=0 python3 run_experiment.py +experiment=dc3_cvx_qcqp model=dc3 dataset=cvx_qcqp dataset.num_ineq=10 seed=101 wandb_project=cvx_qcqp_ineq10_Feb03
+CUDA_VISIBLE_DEVICES=0 python3 run_experiment.py +experiment=snarenet_cvx_qcqp dataset=cvx_qcqp model=snarenet seed=456 wandb_project=cvx_qcqp_ineq10_Feb03
+CUDA_VISIBLE_DEVICES=0 python3 run_experiment.py +experiment=snarenet_cvx_qcqp dataset=cvx_qcqp model=snarenet seed=112 wandb_project=cvx_qcqp_ineq10_Feb03
+CUDA_VISIBLE_DEVICES=0 python3 run_experiment.py +experiment=snarenet_cvx_qcqp dataset=cvx_qcqp model=snarenet seed=123 wandb_project=cvx_qcqp_ineq10_Feb03
+CUDA_VISIBLE_DEVICES=0 python3 run_experiment.py +experiment=snarenet_cvx_qcqp dataset=cvx_qcqp model=snarenet seed=789 wandb_project=cvx_qcqp_ineq10_Feb03
+CUDA_VISIBLE_DEVICES=0 python3 run_experiment.py +experiment=snarenet_cvx_qcqp dataset=cvx_qcqp model=snarenet seed=101 wandb_project=cvx_qcqp_ineq10_Feb03

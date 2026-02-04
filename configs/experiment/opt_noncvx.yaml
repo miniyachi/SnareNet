@@ -1,0 +1,9 @@
+# @package _global_
+
+# Experiment config for running optimizer baseline on cvxqp dataset
+# Matches solver settings used in dataset generation
+
+# Override model settings to match dataset generation
+model:
+  name: scipy
+  tolerance: 1e-4

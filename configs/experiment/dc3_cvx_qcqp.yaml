@@ -1,0 +1,24 @@
+# @package _global_
+# DC3 baseline for CVXQCQP dataset
+# Usage: python3 run_experiment.py +experiment=dc3_cvx_qcqp dataset=cvx_qcqp model=dc3
+
+epochs: 1000
+batch_size: 100
+learning_rate: 0.0001
+
+soft_epochs: 0
+soft_weight: 10
+
+# DC3-specific settings for cvxqp
+model:
+  hidden_size: 200
+  useCompl: true
+  useTrainCorr: true
+  useTestCorr: true
+
+  corrMode: partial
+  corrTrainSteps: 10
+  corrTestMaxSteps: 10
+  corrEps: 1e-4
+  corrLr: 1e-12
+  corrMomentum: 0.5

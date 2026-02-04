@@ -1,0 +1,5 @@
+# Optimizer baseline model configuration
+name: cvxpy
+
+# Solver parameters
+tolerance: 1e-4

@@ -1,0 +1,12 @@
+# Non-convex optimization dataset configuration
+prob_type: noncvx
+
+# Dataset parameters
+seed: 2025
+num_var: 100
+num_ineq: 50
+num_eq: 50
+n_examples: 10000
+
+# Whether to save optimal value
+opt_val_saved: true

@@ -1,0 +1,18 @@
+# DC3 model configuration
+name: dc3
+
+# Network architecture
+hidden_size: 200
+
+# Completion and correction settings
+useCompl: true  # Whether to use completion
+useTrainCorr: true  # Whether to use correction during training
+useTestCorr: true  # Whether to use correction during testing
+
+# Correction procedure parameters
+corrMode: partial  # Employ DC3 correction (partial) or naive correction (full)
+corrTrainSteps: 10  # Number of correction steps during training
+corrTestMaxSteps: 0  # Max number of correction steps during testing
+corrEps: 1e-4  # Correction procedure tolerance
+corrLr: 1e-7  # Learning rate for correction procedure (CRITICAL: must be very small for cvxqp!)
+corrMomentum: 0.5  # Momentum for correction procedure
