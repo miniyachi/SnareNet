@@ -20,4 +20,4 @@ for_hproj/logs/*
 for_hproj/outputs/*
 for_hproj/wandb/*
 
-datasets/*  # remove this later
+commands
