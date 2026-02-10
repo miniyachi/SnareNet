@@ -90,7 +90,7 @@ SnareNet/
     └── plot_table_utils.py      # Plotting and table generation utilities
 ```
 
-## 🚀 Reproducing Experiments
+## 🚀 Reproduce Experiments
 
 ### Step 1: Run Experiments
 
