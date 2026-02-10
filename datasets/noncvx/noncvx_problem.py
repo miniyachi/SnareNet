@@ -5,6 +5,7 @@ import numpy as np
 # from gekko import GEKKO
 import time
 import cvxpy as cp
+from cvxpylayers.torch import CvxpyLayer
 import gurobipy as gp
 from gurobipy import GRB, nlfunc
 from tqdm import tqdm
@@ -342,6 +343,42 @@ class NonCvxProblem:
         Y[:, self.partial_vars] = Z
         Y[:, self.other_vars] = (X - Z @ self._C_partial.T) @ self._C_other_inv.T
         return Y
+    
+    def get_cvxpy_projection_layer(self):
+        """
+        Create a differentiable cvxpy layer for projecting onto the constraint set.
+        
+        Solves: minimize ||y - y_hat||^2
+                subject to Ay <= b, Cy = x
+        
+        Returns a CvxpyLayer that can be used in PyTorch models.
+        """
+        # Define cvxpy variables
+        y = cp.Variable(self.ydim)
+        y_hat = cp.Parameter(self.ydim)  # Neural network output
+        x = cp.Parameter(self.neq)  # Input parameter
+        
+        # Convert to numpy for cvxpy
+        A_np = self.A_np
+        b_np = self.b_np
+        C_np = self.C_np
+        
+        # Define constraints
+        constraints = [
+            A_np @ y <= b_np,  # Inequality constraints
+            C_np @ y == x      # Equality constraints
+        ]
+        
+        # Define objective: minimize ||y - y_hat||^2
+        objective = cp.Minimize(cp.sum_squares(y - y_hat))
+        
+        # Create problem
+        problem = cp.Problem(objective, constraints)
+        
+        # Create differentiable layer
+        cvxpy_layer = CvxpyLayer(problem, parameters=[y_hat, x], variables=[y])
+        
+        return cvxpy_layer
     ####################################
 
     

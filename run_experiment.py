@@ -1,3 +1,15 @@
+"""  
+Train and evaluate neural network models for various constrained neural networks.
+Results are logged to Wandb and saved locally.
+
+Usage:
+    # Train with specific configuration overrides
+    python3 run_experiment.py model=snarenet dataset=noncvx seed=123
+    
+    # Train with custom epochs and soft constraint warmup
+    python3 run_experiment.py epochs=200 soft_epochs=50
+"""
+
 import os
 import wandb
 
@@ -11,7 +23,7 @@ else:
 
 import torch
 import torch.nn as nn
-from torch.profiler import profile, ProfilerActivity, schedule
+from torch.profiler import profile, ProfilerActivity, record_function, schedule
 torch.set_default_dtype(torch.float64)
 
 import os
@@ -21,7 +33,7 @@ from hydra.core.hydra_config import HydraConfig
 from omegaconf import DictConfig, OmegaConf
 
 # Import our utils and model
-from utils import load_data, train_net, test_net, set_wandb_project_run_name, setup_save_directory
+from utils.utils import load_data, train_net, test_net, set_wandb_project_run_name, setup_save_directory
 from constants import MODELNAME_TO_CLASS
 
 

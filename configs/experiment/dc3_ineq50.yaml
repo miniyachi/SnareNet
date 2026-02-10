@@ -20,5 +20,5 @@ model:
   corrTrainSteps: 10
   corrTestMaxSteps: 10
   corrEps: 1e-4
-  corrLr: 1e-13
+  corrLr: 1e-14
   corrMomentum: 0.5

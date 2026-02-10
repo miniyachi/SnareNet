@@ -1,3 +1,12 @@
+"""
+Run traditional optimization solver baselines on test data for constrained optimization problems.
+Results are logged to Wandb and saved locally.
+
+Usage:
+    # Run specific solver on a dataset
+    python3 run_optimizer.py dataset=noncvx
+"""
+
 import os
 import pickle
 import torch
@@ -12,7 +21,7 @@ from hydra.core.hydra_config import HydraConfig
 from omegaconf import DictConfig, OmegaConf
 
 # Import our utils
-from utils import load_data, record_stats, setup_save_directory, set_wandb_project_run_name
+from utils.utils import load_data, record_stats, setup_save_directory, set_wandb_project_run_name
 
 DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 

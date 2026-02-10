@@ -1,6 +1,6 @@
 __pycache__/
 .venv/
-venv/
+.venv/*
 *.npz
 dc3_env/
 hn_env/

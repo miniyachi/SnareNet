@@ -1,3 +1,7 @@
+"""
+SnareNet: Neural network with Newton-based projection for hard constraints
+"""
+
 import torch
 import torch.nn as nn
 torch.set_default_dtype(torch.float64)

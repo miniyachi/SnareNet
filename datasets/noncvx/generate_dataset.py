@@ -8,7 +8,7 @@ import sys
 
 # Add parent directory to path to import utils
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
-from utils import get_problem_param_str
+from utils.utils import get_problem_param_str
 
 from noncvx_problem import NonCvxProblem
 

@@ -1,9 +1,16 @@
+try:
+    import waitGPU
+    waitGPU.wait(utilization=50, memory_ratio=0.5, available_memory=5000, interval=9, nproc=1, ngpu=1)
+except ImportError:
+    pass
+
 import torch
 import torch.nn as nn
 torch.set_default_dtype(torch.float64)
 
 import operator
 from functools import reduce
+
 
 class DC3(nn.Module):
     def __init__(self, data, cfg):

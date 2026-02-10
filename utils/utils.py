@@ -220,6 +220,12 @@ def get_hyperparam_str(model_cfg) -> str:
     elif model_name == 'hproj':
         proj_type = model_cfg.get('proj_type', "")
         return proj_type
+    elif model_name == 'optnet':
+        solver_args = model_cfg.get('solver_args', None)
+        if solver_args and solver_args.get('solve_method'):
+            return f"solver{solver_args['solve_method']}"
+        else:
+            return "cvxpy_default"
     else:
         raise NotImplementedError(f"Hyperparameter string generation not implemented for model name: {model_name}")
 
@@ -282,7 +288,6 @@ def setup_save_directory(cfg: DictConfig) -> str:
 def load_data(dataset_cfg, device):
     """
     Load data and put on GPU if needed.
-    Supports both baseline datasets (from hardnet_repo) and custom datasets.
     
     Dataset format: Dictionary with raw coefficient matrices
     - Keys: prob_type, class_input, opt_sols, opt_vals
@@ -306,24 +311,20 @@ def load_data(dataset_cfg, device):
     else:
         raise NotImplementedError(f"Problem type '{prob_type}' not implemented for data loading.")
     
-    # Try loading from custom datasets first
-    custom_path = os.path.join('datasets', prob_type, filename)
-    baseline_path = os.path.join('hardnet_repo', 'datasets', prob_type, filename)
+    # Get the project root directory (utils.py is now in utils/ subdirectory, so go up one level)
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     
-    # Determine which path exists
-    if os.path.exists(custom_path):
-        filepath = custom_path
-        dataset_dir = os.path.join('datasets', prob_type)
-        print(f"Loading custom dataset from: {filepath}")
-    elif os.path.exists(baseline_path):
-        filepath = baseline_path
-        dataset_dir = os.path.join('hardnet_repo', 'datasets', prob_type)
-        print(f"Loading baseline dataset from: {filepath}")
-    else:
+    # Load from datasets directory (use absolute path from project root)
+    filepath = os.path.join(project_root, 'datasets', prob_type, filename)
+    dataset_dir = os.path.join(project_root, 'datasets', prob_type)
+    
+    if not os.path.exists(filepath):
         raise FileNotFoundError(
             f"Could not find dataset for {prob_type} with param {prob_params}.\n"
-            f"Tried:\n  - {custom_path}\n  - {baseline_path}"
+            f"Expected path: {filepath}"
         )
+    
+    print(f"Loading dataset from: {filepath}")
     
     # Load the dataset
     with open(filepath, 'rb') as f:
@@ -331,15 +332,6 @@ def load_data(dataset_cfg, device):
         if dataset_dir not in sys.path:
             sys.path.append(dataset_dir)
         loaded_data = pickle.load(f)
-    
-    # Ensure dataset new format (dictionary with raw data)
-    if not isinstance(loaded_data, dict):
-        raise ValueError(
-            f"Expected dataset to be a dictionary (new format), but got {type(loaded_data)}. "
-            "Please regenerate the dataset using the updated generation script."
-        )
-    
-    print("Loading dataset from new format (raw data dictionary)")
     
     # Construct the appropriate problem class
     if prob_type not in PROBTYPE_TO_CLASS:

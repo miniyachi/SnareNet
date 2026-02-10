@@ -1,14 +1,19 @@
+from datasets.cvxqp.cvxqp_problem import CvxQPProblem
 from datasets.cvx_qcqp.cvxqcqp_problem import QCQP
-# from datasets.cbf.cbf_problem import SafeControl
+from datasets.cbf.cbf_problem import SafeControl
+from datasets.discrete_cbf.discrete_cbf import DiscSafeControl
 from datasets.noncvx.noncvx_problem import NonCvxProblem
 
 from models.snarenet import SnareNet
 from models.hardnetaff import HardNetAff
 from models.dc3 import DC3
+from models.optnet import OptNet
 
 PROBTYPE_TO_CLASS = {
+    'cvxqp': CvxQPProblem,
     'cvx_qcqp': QCQP,
-    # 'cbf': SafeControl,
+    'cbf': SafeControl,
+    'discrete_cbf': DiscSafeControl,
     'noncvx': NonCvxProblem,
 }
 
@@ -16,6 +21,7 @@ MODELNAME_TO_CLASS = {
     'hardnetaff': HardNetAff,
     'dc3': DC3,
     'snarenet': SnareNet,
+    'optnet': OptNet,
 }
 
 

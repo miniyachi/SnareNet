@@ -4,6 +4,7 @@ torch.set_default_dtype(torch.float64)
 import numpy as np
 from gekko import GEKKO
 import cvxpy as cp
+from cvxpylayers.torch import CvxpyLayer
 import time
 from functools import partial
 from tqdm import tqdm
@@ -380,6 +381,45 @@ class QCQP:
         Y[:, self.partial_vars] = Z
         Y[:, self.other_vars] = (X - Z @ self._A_partial.T) @ self._A_other_inv.T
         return Y
+    
+    def get_cvxpy_projection_layer(self):
+        """
+        Create a differentiable cvxpy layer for projecting onto the constraint set.
+        
+        Solves: minimize ||y - y_hat||^2
+                subject to y^T H_i y + G_i^T y <= h_i for i=1,...,m
+                           Ay = x
+        
+        Returns a CvxpyLayer that can be used in PyTorch models.
+        """
+        # Define cvxpy variables
+        y = cp.Variable(self.ydim)
+        y_hat = cp.Parameter(self.ydim)  # Neural network output
+        x = cp.Parameter(self.neq)  # Input parameter
+        
+        # Convert to numpy for cvxpy
+        A_np = self.A_np
+        H_np = self.H_np
+        G_np = self.G_np
+        h_np = self.h_np
+        
+        # Define constraints
+        constraints = [A_np @ y == x]  # Equality constraints
+        
+        # Quadratic inequality constraints: y^T H_i y + G_i^T y <= h_i
+        for i in range(self.nineq):
+            constraints.append(cp.quad_form(y, H_np[i]) + G_np[i] @ y <= h_np[i])
+        
+        # Define objective: minimize ||y - y_hat||^2
+        objective = cp.Minimize(cp.sum_squares(y - y_hat))
+        
+        # Create problem
+        problem = cp.Problem(objective, constraints)
+        
+        # Create differentiable layer
+        cvxpy_layer = CvxpyLayer(problem, parameters=[y_hat, x], variables=[y])
+        
+        return cvxpy_layer
     ####################################
     
     ###### For optimization solver
