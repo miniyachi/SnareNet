@@ -1,6 +1,6 @@
 # SnareNet: Flexible Repair Layers for Neural Networks with Hard Constraints
 
-[![arXiv](https://img.shields.io/badge/arXiv-XXXX.XXXXX-b31b1b.svg)]() <!-- TODO: Add arXiv link -->
+[![arXiv](https://img.shields.io/badge/arXiv-2602.09317-b31b1b.svg)](https://arxiv.org/abs/2602.09317) <!-- TODO: Add arXiv link -->
 
 This repository contains the official implementation of **SnareNet**, a flexible repair layer architecture for neural networks that enforces hard constraints.
 
@@ -207,11 +207,14 @@ Model configurations are in `configs/model/`. For H-Proj, refer to [for_hproj/SC
 If you find this work useful, please cite our paper:
 
 ```bibtex
-@article{snarenet2026,
-  title={SnareNet: Flexible Repair Layers for Neural Networks with Hard Constraints},
-  author={}, <!-- TODO: Add authors -->
-  journal={arXiv preprint arXiv:XXXX.XXXXX},
-  year={2026}
+@article{chu2026snarenet,
+      title={SnareNet: Flexible Repair Layers for Neural Networks with Hard Constraints}, 
+      author={Ya-Chi Chu and Alkiviades Boukas and Madeleine Udell},
+      year={2026},
+      eprint={2602.09317},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG},
+      url={https://arxiv.org/abs/2602.09317}, 
 }
 ```
 
