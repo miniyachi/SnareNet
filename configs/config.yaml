@@ -7,8 +7,9 @@ defaults:
 
 # Experiment settings
 seed: 123
+wandb_workspace: ConstrainedNN  # wandb entity/team name (leave blank to use wandb default)
 wandb_project:
-wandb_name: 
+wandb_name:
 save_all_stats: true
 results_save_freq: 100
 eval_freq: 1

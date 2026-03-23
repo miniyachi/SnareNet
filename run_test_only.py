@@ -35,7 +35,7 @@ from hydra.core.hydra_config import HydraConfig
 from omegaconf import DictConfig, OmegaConf
 
 # Import our utils and model
-from utils.utils import load_data, test_net, set_wandb_project_run_name, setup_save_directory, set_seed
+from utils.utils import load_data, test_net, set_wandb_run_info, setup_save_directory, set_seed
 from constants import MODELNAME_TO_CLASS
 
 
@@ -124,7 +124,7 @@ def run_test_exp(cfg: DictConfig):
     print(f"Saving test results to: {test_save_dir}")
     
     # Set wandb project and run names
-    wandb_project, wandb_name = set_wandb_project_run_name(cfg)
+    wandb_entity, wandb_project, wandb_name = set_wandb_run_info(cfg)
     
     # Load model from wandb
     print(f"\nLoading model from wandb project: {wandb_project}, run: {wandb_name}")
@@ -142,7 +142,7 @@ def run_test_exp(cfg: DictConfig):
     # Create a new wandb run for testing
     test_wandb_project = f"{wandb_project}_test"
     test_wandb_name = f"{wandb_name}_test"
-    with wandb.init(project=test_wandb_project, name=test_wandb_name, job_type="test") as run:
+    with wandb.init(entity=wandb_entity, project=test_wandb_project, name=test_wandb_name, job_type="test") as run:
         # Log config to wandb
         wandb.config.update(OmegaConf.to_container(cfg, resolve=True))
         

@@ -1,0 +1,29 @@
+# Optimal control dataset configuration
+name: cbf
+prob_type: cbf
+
+# Dataset parameters
+n_examples: 1000
+loss_max: 20000
+alpha: 20
+kappa: 10
+T: 2.2
+dt: 0.04
+valid_frac: 0.0833
+test_frac: 0.0833
+num_var: 2
+num_ineq: 3 # Equals the number of obstacles
+num_eq: 0
+x_min: -5.5
+y_min: 7.5
+x_max: -5.0
+y_max: 8.0
+
+# Dataset-specific training overrides
+batch_size: 200
+soft_epochs: 0  # May need tuning for cbf
+seed: 8
+use_batch_norm: false
+
+# Whether to save optimal value
+opt_val_saved: false

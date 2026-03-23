@@ -1,0 +1,26 @@
+# @package _global_
+# DC3 baseline for CBF dataset
+# Usage: python3 run_experiment.py +experiment=dc3_cbf dataset=cbf model=dc3
+
+batch_size: 100
+learning_rate: 0.0001
+
+soft_epochs: 0
+epochs: 200
+soft_weight: 10
+
+results_save_freq: 10
+
+# DC3-specific settings for cbf
+model:
+  hidden_size: 200
+  useCompl: true
+  useTrainCorr: true
+  useTestCorr: true
+
+  corrMode: full
+  corrTrainSteps: 10
+  corrTestMaxSteps: 10
+  corrEps: 1e-4
+  corrLr: 1e-13
+  corrMomentum: 0.5

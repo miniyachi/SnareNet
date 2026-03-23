@@ -33,7 +33,7 @@ from hydra.core.hydra_config import HydraConfig
 from omegaconf import DictConfig, OmegaConf
 
 # Import our utils and model
-from utils.utils import load_data, train_net, test_net, set_wandb_project_run_name, setup_save_directory
+from utils.utils import load_data, train_net, test_net, set_wandb_run_info, setup_save_directory, set_seed
 from constants import MODELNAME_TO_CLASS
 
 
@@ -71,6 +71,9 @@ def run_exp(cfg: DictConfig):
     # Set Python process title
     setproctitle(f'{model_name}-{cfg.dataset.prob_type}')
     
+    # Seed before load_data so np.random.choice in problem constructors is reproducible
+    set_seed(cfg.seed)
+
     # Load data class
     data = load_data(cfg.dataset, DEVICE)
     
@@ -95,7 +98,7 @@ def run_exp(cfg: DictConfig):
         return net
     
     # Set wandb project and run names
-    wandb_project, wandb_name = set_wandb_project_run_name(cfg)
+    wandb_entity, wandb_project, wandb_name = set_wandb_run_info(cfg)
 
     # Set up profiling if enabled
     profiling = cfg.get('profiling', False)
@@ -104,7 +107,7 @@ def run_exp(cfg: DictConfig):
         sort_by_keyword = "cuda_time_total"
         my_schedule = schedule(wait=5, warmup=1, active=4)
 
-    with wandb.init(project=wandb_project, name=wandb_name) as run:
+    with wandb.init(entity=wandb_entity, project=wandb_project, name=wandb_name) as run:
         # Log config to wandb
         wandb.config.update(OmegaConf.to_container(cfg, resolve=True))
         

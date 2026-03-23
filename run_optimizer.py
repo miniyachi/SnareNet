@@ -21,7 +21,7 @@ from hydra.core.hydra_config import HydraConfig
 from omegaconf import DictConfig, OmegaConf
 
 # Import our utils
-from utils.utils import load_data, record_stats, setup_save_directory, set_wandb_project_run_name
+from utils.utils import load_data, record_stats, setup_save_directory, set_wandb_run_info
 
 DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
@@ -53,9 +53,9 @@ def run_optimizer(cfg: DictConfig):
     print(f"Saving results to: {save_dir}")
     
     # Set wandb project and run names
-    wandb_project, wandb_name = set_wandb_project_run_name(cfg)
+    wandb_entity, wandb_project, wandb_name = set_wandb_run_info(cfg)
     
-    with wandb.init(project=wandb_project, name=wandb_name) as run:
+    with wandb.init(entity=wandb_entity, project=wandb_project, name=wandb_name) as run:
         # Log config to wandb
         wandb.config.update(OmegaConf.to_container(cfg, resolve=True))
         

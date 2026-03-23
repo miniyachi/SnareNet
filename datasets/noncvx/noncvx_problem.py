@@ -2,12 +2,9 @@ import torch
 torch.set_default_dtype(torch.float64)
 
 import numpy as np
-# from gekko import GEKKO
 import time
 import cvxpy as cp
 from cvxpylayers.torch import CvxpyLayer
-import gurobipy as gp
-from gurobipy import GRB, nlfunc
 from tqdm import tqdm
 from scipy.optimize import minimize
 
@@ -394,71 +391,7 @@ class NonCvxProblem:
         total_time = 0
         
         for idx, Xi in enumerate(tqdm(X_np, desc=f"Solving {solver_type}")):
-            if solver_type == 'gurobipy':
-                # Create Gurobi model
-                model = gp.Model("noncvx_qp")
-                model.setParam('OutputFlag', 1 if verbose else 0)  # Suppress output
-                model.setParam('NonConvex', 2)  # Allow nonconvex quadratic constraints/objectives
-                model.setParam('FeasibilityTol', tol)
-                model.setParam('OptimalityTol', tol)
-                
-                # Critical: Set time limit to prevent infinite solving
-                model.setParam('TimeLimit', 300)
-                
-                # For non-convex problems, set MIP gap tolerance
-                model.setParam('MIPGap', 0.01)
-                model.setParam('MIPGapAbs', tol)
-                
-                # Use more aggressive spatial branching
-                model.setParam('NodeLimit', 100000)  # Limit nodes explored
-                
-                # Add variables with reasonable bounds to help the solver
-                # Assuming y is bounded (adjust if needed)
-                y = model.addVars(self._ydim, lb=-100, ub=100, name="y")
-                
-                # Equality constraints: Cy = x
-                for i in range(C.shape[0]):
-                    model.addConstr(gp.quicksum(C[i, j] * y[j] for j in range(self._ydim)) == Xi[i])
-                
-                # Inequality constraints: Ay <= b
-                for i in range(A.shape[0]):
-                    model.addConstr(gp.quicksum(A[i, j] * y[j] for j in range(self._ydim)) <= b[i])
-                
-                # Objective: minimize 0.5 * y^T Q y + p^T sin(y)
-                # Quadratic part (Q: diagonal)
-                quad_expr = gp.QuadExpr()
-                for i in range(self._ydim):
-                    if Q[i, i] != 0:
-                        quad_expr += 0.5 * Q[i, i] * y[i] * y[i]
-                
-                # Add sin(y) terms using general constraints
-                sin_vars = model.addVars(self._ydim, lb=-1, ub=1, name="sin_y")
-                for i in range(self._ydim):
-                    model.addGenConstrSin(y[i], sin_vars[i], name=f"sin_{i}")
-                
-                # Complete objective
-                obj = quad_expr + gp.quicksum(p[i] * sin_vars[i] for i in range(self._ydim))
-                model.setObjective(obj, GRB.MINIMIZE)
-                
-                start_time = time.time()
-                model.optimize()
-                end_time = time.time()
-                
-                # Update in-place
-                if model.SolCount > 0:  # Check if at least one solution was found
-                    y_sol = np.array([y[i].X for i in range(self._ydim)])
-                    self._Y[indices[idx]] = torch.tensor(y_sol, device=self.device)
-                    self.opt_vals[indices[idx]] = model.ObjVal
-                else:
-                    print(f"Warning: No solution found for index {indices[idx]}. Status: {model.status}")
-                    # Keep NaN values
-                
-                if model.status not in [GRB.OPTIMAL, GRB.TIME_LIMIT]:
-                    print(f"Warning: Solver issue for index {indices[idx]}. Status: {model.status}, Time: {end_time - start_time:.2f}s")
-                
-                total_time += (end_time - start_time)
-            
-            elif solver_type == 'scipy':
+            if solver_type == 'scipy':
                 # Use scipy's SLSQP for local optimization (much faster but only finds local optimum)
                 # Define objective function
                 def objective(y_vals):

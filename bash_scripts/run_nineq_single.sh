@@ -42,6 +42,7 @@ for NUM_INEQ in $NUM_INEQ_VALUES; do
         CUDA_VISIBLE_DEVICES=$GPU python3 run_experiment.py \
             +experiment=snarenet_ineq \
             dataset=$DATASET \
+            dataset.num_ineq=$NUM_INEQ \
             model=snarenet \
             seed=$SEED \
             wandb_project=$WANDB_PROJECT

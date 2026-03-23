@@ -1,0 +1,16 @@
+# @package _global_
+# SnareNet for CBF dataset
+# Usage: python3 run_experiment.py +experiment=snarenet_cbf dataset=cbf model=snarenet
+
+epochs: 200
+soft_epochs: 50
+batch_size: 100
+learning_rate: 0.0001
+
+results_save_freq: 10
+
+model:
+  lambd: 1e-2
+  trust_region: false
+  adaptive_relaxation: false
+  rtol: 1.0e-6

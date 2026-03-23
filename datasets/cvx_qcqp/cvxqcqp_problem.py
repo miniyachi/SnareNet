@@ -2,9 +2,10 @@ import torch
 torch.set_default_dtype(torch.float64)
 
 import numpy as np
-from gekko import GEKKO
 import cvxpy as cp
 from cvxpylayers.torch import CvxpyLayer
+import gurobipy as gp
+from gurobipy import GRB
 import time
 from functools import partial
 from tqdm import tqdm
@@ -424,85 +425,76 @@ class QCQP:
     
     ###### For optimization solver
 
-    def opt_solve(self, indices=None, solver_type='cvxpy', tol=1e-4):
+    def opt_solve(self, indices=None, solver_type='gurobipy', tol=1e-4, verbose=False):
         Q, p, A, H, G, h = self.Q_np, self.p_np, self.A_np, self.H_np, self.G_np, self.h_np
-        
+
         # If indices not provided, solve for all instances
         if indices is None:
             indices = np.arange(self.num)
-        
+
         X_np = self.X_np[indices]
         total_time = 0
-        
+
         for idx, Xi in enumerate(tqdm(X_np, desc=f"Solving {solver_type}")):
-            if solver_type == 'gekko':
-                y0 = np.linalg.pinv(A)@Xi
+            if solver_type == 'gurobipy':
+                model = gp.Model("qcqp")
+                model.setParam('OutputFlag', 1 if verbose else 0)
+                model.setParam('FeasibilityTol', tol)
+                model.setParam('OptimalityTol', tol)
+                model.setParam('NumericFocus', 3)   # Max numerical precision (1-3)
 
-                m = GEKKO(remote=False)
-                m.options.OTOL = tol
-                m.options.RTOL = tol
-
-                y = m.Array(m.Var, y0.shape, lb=-1e5, ub=1e5)
-
-                for j in range(len(y0)):
-                    y[j].value = y0[j]
+                y = model.addMVar(self._ydim, lb=-GRB.INFINITY, ub=GRB.INFINITY, name="y")
 
                 # Equality constraints: Ay = x
-                for j in range(len(A)):
-                    m.Equation(np.dot(A[j,:], y) == Xi[j])
+                model.addMConstr(A, y, '=', Xi)
 
-                # Inequality constraints: y^T H_i y + G_i^T y <= h_i
-                for j in range(self._nineq):
-                    H_i = H[j]
-                    G_i = G[j]
-                    h_i = h[j]
-                    
-                    quad_term = m.sum(y * np.matmul(H_i, y))
-                    linear_term = np.dot(G_i, y)
-                    m.Equation(quad_term + linear_term <= h_i)
+                # Quadratic inequality constraints: y^T H_i y + G_i^T y <= h_i
+                # H[i] are PSD (diagonal with non-negative entries), so no NonConvex flag needed
+                for i in range(self._nineq):
+                    model.addConstr(y @ H[i] @ y + G[i] @ y <= h[i])
 
                 # Objective: minimize 0.5 * y^T Q y + p^T y
-                m.Minimize(m.sum(0.5 * (y * np.matmul(Q, y))) + np.dot(p, y))
+                model.setObjective(0.5 * y @ Q @ y + p @ y, GRB.MINIMIZE)
 
                 start_time = time.time()
-                m.solve(disp=False)
+                model.optimize()
                 end_time = time.time()
-                y_sol = np.array([yi.value[0] for yi in y])
-                opt_val = m.options.OBJFCNVAL
-                
-                # Update in-place
-                self._Y[indices[idx]] = torch.tensor(y_sol, device=self.device)
-                self.opt_vals[indices[idx]] = opt_val
-                
+
+                if model.SolCount > 0:
+                    self._Y[indices[idx]] = torch.tensor(y.X, device=self.device)
+                    self.opt_vals[indices[idx]] = model.ObjVal
+                else:
+                    print(f"Warning: No solution found for index {indices[idx]}. Status: {model.status}")
+
                 total_time += (end_time - start_time)
-            
+
             elif solver_type == 'cvxpy':
                 y = cp.Variable(self._ydim)
-                
+            
                 # Equality constraints: Ay = x
                 constraints = [A @ y == Xi]
-
+            
                 # Inequality constraints: y^T H_i y + G_i^T y <= h_i
                 for i in range(self._nineq):
                     Ht = H[i]
                     Gt = G[i]
                     ht = h[i]
-                    constraints.append(cp.quad_form(y,Ht) + Gt.T @ y <= ht)
-                
+                    constraints.append(cp.quad_form(y, Ht) + Gt.T @ y <= ht)
+            
                 # Objective: minimize 0.5 * y^T Q y + p^T y
                 prob = cp.Problem(cp.Minimize((1 / 2) * cp.quad_form(y, Q) + p.T @ y),
                                     constraints)
-                
+            
                 start_time = time.time()
                 prob.solve(solver=cp.GUROBI)
                 end_time = time.time()
-                
+            
                 # Update in-place
                 self._Y[indices[idx]] = torch.tensor(y.value, device=self.device)
                 self.opt_vals[indices[idx]] = prob.value
-                
-                total_time += (end_time - start_time)
             
+                total_time += (end_time - start_time)
+
             else:
                 raise NotImplementedError
 

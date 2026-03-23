@@ -75,7 +75,7 @@ def generate(dataset_cfg: DictConfig) -> None:
     problem = QCQP(Q, p, A, X, G, H, h, L, U)
     if opt_val_saved:
         print(f'Solving {num_examples} examples of convex QCQP with {num_var} variables, {num_eq} equality constraints, and {num_ineq} inequality constraints...')
-        problem.opt_solve(solver_type='cvxpy')
+        problem.opt_solve(solver_type='gurobipy')
         print(f'Finished solving QCQP problem instances.')
         Y = problem.Y.detach().cpu().numpy()
         opt_vals = problem.opt_vals.cpu().numpy()

@@ -1,5 +1,5 @@
 from datasets.cvx_qcqp.cvxqcqp_problem import QCQP
-# from datasets.cbf.cbf_problem import SafeControl
+from datasets.cbf.cbf_problem import SafeControl
 from datasets.noncvx.noncvx_problem import NonCvxProblem
 
 from models.snarenet import SnareNet
@@ -8,7 +8,7 @@ from models.dc3 import DC3
 
 PROBTYPE_TO_CLASS = {
     'cvx_qcqp': QCQP,
-    # 'cbf': SafeControl,
+    'cbf': SafeControl,
     'noncvx': NonCvxProblem,
 }
 

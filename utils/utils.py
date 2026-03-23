@@ -242,24 +242,27 @@ def get_method_name(cfg: DictConfig) -> str:
     return method_name
 
 
-def set_wandb_project_run_name(cfg: DictConfig) -> tuple[str, str]:
+def set_wandb_run_info(cfg: DictConfig) -> tuple[str | None, str, str]:
     """
-    Generate wandb project and run names based on configuration.
-    
+    Generate wandb entity, project, and run name based on configuration.
+
+        wandb_entity: cfg.wandb_workspace if provided, else None (wandb default)
         wandb_project: "{probType}_{problemParams}"
         wandb_name: "seed{seed}_{modelName}_{hyperparams}_soft{softEpochs}"
     """
+    wandb_entity = cfg.get('wandb_workspace', None)
+
     # Set project name by problem type and parameters
     prob_type = cfg.dataset.prob_type
     prob_params = get_problem_param_str(cfg.dataset)
     wandb_project = f"{prob_type}_{prob_params}" if not cfg.get('wandb_project', None) else cfg.wandb_project
-    
+
     # Set run name by seeds, models, and soft epochs
     seed = cfg.seed
     method_name = get_method_name(cfg)
     wandb_name = f"seed{seed}_{method_name}" if not cfg.get('wandb_name', None) else cfg.wandb_name
 
-    return wandb_project, wandb_name
+    return wandb_entity, wandb_project, wandb_name
 
 
 def setup_save_directory(cfg: DictConfig) -> str:
@@ -618,13 +621,25 @@ def train_net(data, cfg, net_cls, save_dir, net_modifier_fn=None, wandb_run=None
                 pickle.dump(stats, f)
             with open(os.path.join(save_dir, f'net_epoch{epoch}.dict'), 'wb') as f:
                 torch.save(net.state_dict(), f)
+            with open(os.path.join(save_dir, f'net_current.dict'), 'wb') as f:
+                torch.save(net.state_dict(), f)
+
+            if wandb_run is not None:
+                artifact = wandb.Artifact(
+                    name=wandb_run.name,
+                    type='model',
+                    metadata={'run_id': wandb_run.id}
+                )
+                artifact.add_file(os.path.join(save_dir, 'net_current.dict'), name='net_current.dict')
+                artifact.add_file(os.path.join(save_dir, f'net_epoch{epoch}.dict'), name=f'net_epoch{epoch}.dict')
+
 
     # Save final results
     with open(os.path.join(save_dir, 'stats.dict'), 'wb') as f:
         pickle.dump(stats, f)
     with open(os.path.join(save_dir, 'net.dict'), 'wb') as f:
         torch.save(net.state_dict(), f)
-    
+
     # Save model as wandb artifact
     if wandb_run is not None:
         artifact = wandb.Artifact(
