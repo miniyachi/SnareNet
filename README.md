@@ -68,8 +68,10 @@ SnareNet/
 │   ├── run_noncvx_multi.sh      # Run non-convex experiments in parallel
 │   ├── run_lambd_single.sh      # Run lambda ablation experiments sequentially
 │   ├── run_lambd_multi.sh       # Run lambda ablation experiments in parallel
-│   ├── run_nineq_single.sh      # Run inequality constraint experiments sequentially
-│   └── run_nineq_multi.sh       # Run inequality constraint experiments in parallel
+│   ├── run_nineq_single.sh      # Run inequality constraint scaling experiments sequentially
+│   ├── run_nineq_multi.sh       # Run inequality constraint scaling experiments in parallel
+│   ├── run_cbf_single.sh        # Run CBF safe control experiments sequentially
+│   └── run_cbf_multi.sh         # Run CBF safe control experiments in parallel
 ├── configs/                   # Hydra configuration files
 │   ├── config.yaml              # Main configuration
 │   ├── config_opt.yaml          # Optimizer configuration
@@ -82,9 +84,19 @@ SnareNet/
 │   └── hardnetaff.py            # HardNetAff baseline
 ├── datasets/                  # Dataset files
 │   ├── cvx_qcqp/                # Convex QCQP datasets
-│   └── noncvx/                  # Non-convex datasets
+│   ├── noncvx/                  # Non-convex datasets
+│   └── cbf/                     # CBF safe control datasets
+│       ├── cbf_problem.py         # CBF problem definition (unicycle system, obstacles)
+│       └── generate_dataset.py    # Dataset generation script
+├── sbatch_scripts/            # SLURM batch job submission scripts
+│   ├── run_cvx_qcqp_sbatch.py  # SLURM jobs for convex QCQP experiments
+│   ├── run_noncvx_sbatch.py     # SLURM jobs for non-convex experiments
+│   ├── run_lambd_sbatch.py      # SLURM jobs for lambda ablation experiments
+│   ├── run_nineq_sbatch.py      # SLURM jobs for inequality scaling experiments
+│   └── run_cbf_sbatch.py        # SLURM jobs for CBF experiments
 ├── notebooks/                 # Jupyter notebooks for analysis and visualization
-│   └── opt_learning.ipynb       # Generate plots and tables from wandb results
+│   ├── opt_learning.ipynb       # Generate plots and tables from wandb results
+│   └── cont_cbf_visual.ipynb    # Visualize CBF safe control trajectories
 └── utils/                     # Utility functions
     ├── utils.py                 # Training and data loading utilities
     └── plot_table_utils.py      # Plotting and table generation utilities
@@ -115,6 +127,11 @@ bash bash_scripts/run_noncvx_multi.sh
 Run lambda ablation studies:
 ```bash
 bash bash_scripts/run_lambd_multi.sh
+```
+
+Run CBF safe control experiments:
+```bash
+bash bash_scripts/run_cbf_single.sh
 ```
 
 **Running H-Proj baseline experiments:**
@@ -184,10 +201,11 @@ python3 run_test_only.py wandb_run_id=<your_run_id>
 
 ## 📊 Datasets
 
-The repository includes two main dataset categories:
+The repository includes three dataset categories:
 
 1. **Convex QCQP (`cvx_qcqp/`)**: Convex Quadratically Constrained Quadratic Programs
 2. **Non-convex (`noncvx/`)**: Non-convex optimization problems
+3. **CBF Safe Control (`cbf/`)**: Safe control for a unicycle system with elliptical obstacles, using Control Barrier Functions (CBF)
 
 Dataset configurations can be found in `configs/dataset/`.
 
