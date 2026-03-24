@@ -59,6 +59,14 @@ SNARENET_WRAP = COMMON_SETUP + textwrap.dedent(r"""\
         wandb_project=${WANDB_PROJECT}
 """)
 
+HPROJ_WRAP = COMMON_SETUP + textwrap.dedent(r"""\
+    python3 run_hproj.py \
+        dataset=${DATASET} \
+        dataset.num_ineq=${NUM_INEQ} \
+        seed=${SEED} \
+        wandb_project=${WANDB_PROJECT}
+""")
+
 
 def sbatch(job_name, env_vars, wrap_script):
     export = "ALL," + ",".join(f"{k}={v}" for k, v in env_vars.items())
@@ -122,5 +130,18 @@ for num_ineq in NUM_INEQ_VALUES:
         jid = sbatch(name, env, SNARENET_WRAP)
         jobs.append(jid)
         print(f"[snarenet-{dataset}] num_ineq={num_ineq}  seed={seed}  -> job {jid}")
+
+    for seed in SEEDS:
+        # HProj
+        name = f"hproj_{dataset}_ineq{num_ineq}_s{seed}"
+        env = {
+            "DATASET": dataset,
+            "NUM_INEQ": num_ineq,
+            "SEED": seed,
+            "WANDB_PROJECT": wandb_project,
+        }
+        jid = sbatch(name, env, HPROJ_WRAP)
+        jobs.append(jid)
+        print(f"[hproj-{dataset}] num_ineq={num_ineq}  seed={seed}  -> job {jid}")
 
 print(f"\nSubmitted {len(jobs)} jobs total.")

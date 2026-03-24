@@ -47,4 +47,10 @@ for SEED in $SEEDS; do
             wandb_project=$WANDB_PROJECT \
             model.rtol=$RTOL
     done
+
+    # Run hproj
+    echo CUDA_VISIBLE_DEVICES=$GPU python3 run_hproj.py \
+        dataset=$DATASET \
+        seed=$SEED \
+        wandb_project=$WANDB_PROJECT
 done

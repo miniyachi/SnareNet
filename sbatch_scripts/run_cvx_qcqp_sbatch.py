@@ -41,6 +41,13 @@ CVX_QCQP_WRAP = COMMON_SETUP + textwrap.dedent(r"""\
         ${EXTRA_ARGS}
 """)
 
+HPROJ_WRAP = COMMON_SETUP + textwrap.dedent(r"""\
+    python3 run_hproj.py \
+        dataset=${DATASET} \
+        seed=${SEED} \
+        wandb_project=${WANDB_PROJECT}
+""")
+
 
 def sbatch(job_name, env_vars, wrap_script):
     export = "ALL," + ",".join(f"{k}={v}" for k, v in env_vars.items())
@@ -94,6 +101,17 @@ for seed in SEEDS:
         jid = sbatch(name, env, CVX_QCQP_WRAP)
         jobs.append(jid)
         print(f"[snarenet-{dataset}] seed={seed}  rtol={rtol}  -> job {jid}")
+
+    # HProj
+    name = f"hproj_{dataset}_s{seed}"
+    env = {
+        "DATASET": dataset,
+        "SEED": seed,
+        "WANDB_PROJECT": wandb_project,
+    }
+    jid = sbatch(name, env, HPROJ_WRAP)
+    jobs.append(jid)
+    print(f"[hproj-{dataset}] seed={seed}  -> job {jid}")
 
 print(f"\nSubmitted {len(jobs)} jobs total.")
 print(f"wandb_project: {wandb_project}")
