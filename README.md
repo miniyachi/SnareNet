@@ -1,7 +1,5 @@
 # SnareNet: Flexible Repair Layers for Neural Networks with Hard Constraints
 
-[![arXiv](https://img.shields.io/badge/arXiv-2602.09317-b31b1b.svg)](https://arxiv.org/abs/2602.09317) <!-- TODO: Add arXiv link -->
-
 This repository contains the official implementation of **SnareNet**, a flexible repair layer architecture for neural networks that enforces hard constraints.
 
 ## 📖 Overview
@@ -17,11 +15,7 @@ SnareNet provides a flexible framework for incorporating hard constraints into n
 
 ### Installation
 
-1. Clone the repository:
-```bash
-git clone https://github.com/miniyachi/SnareNet.git
-cd SnareNet
-```
+1. Clone the repository
 
 2. Install dependencies:
 ```bash
@@ -210,22 +204,6 @@ The repository implements several constrained neural network architectures:
 - **H-Proj**: Homeomorphic projection baseline (INN + bisection repair); implemented in [models/hproj.py](models/hproj.py), run via [run_hproj.py](run_hproj.py)
 
 Model configurations are in `configs/model/`.
-
-## 📝 Citation
-
-If you find this work useful, please cite our paper:
-
-```bibtex
-@article{chu2026snarenet,
-      title={SnareNet: Flexible Repair Layers for Neural Networks with Hard Constraints}, 
-      author={Ya-Chi Chu and Alkiviades Boukas and Madeleine Udell},
-      year={2026},
-      eprint={2602.09317},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG},
-      url={https://arxiv.org/abs/2602.09317}, 
-}
-```
 
 ## 🙏 Acknowledgments
 
