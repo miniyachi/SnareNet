@@ -92,9 +92,9 @@ def run_exp(cfg: DictConfig):
     soft_epochs = cfg.soft_epochs
     def modify_net(net, epoch):
         if epoch < soft_epochs:
-            net.set_projection(False)
+            net.set_repair(False)
         else:
-            net.set_projection(True)
+            net.set_repair(True)
         return net
     
     # Set wandb project and run names

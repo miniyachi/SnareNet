@@ -17,15 +17,10 @@ SnareNet provides a flexible framework for incorporating hard constraints into n
 
 ### Installation
 
-1. Clone the repository (with submodules):
+1. Clone the repository:
 ```bash
-git clone --recurse-submodules https://github.com/miniyachi/SnareNet.git
+git clone https://github.com/miniyachi/SnareNet.git
 cd SnareNet
-```
-
-   If you've already cloned without submodules, initialize them:
-```bash
-git submodule update --init --recursive
 ```
 
 2. Install dependencies:
@@ -47,20 +42,11 @@ wandb login
 ```
 SnareNet/
 ├── run_experiment.py          # Main entry-point for neural network experiments
+├── run_hproj.py               # Main entry-point for H-Proj baseline
 ├── run_optimizer.py           # Main entry-point for traditional optimization solvers (requires Gurobi)
 ├── run_test_only.py           # Load trained model from wandb and run inference on test set
 ├── constants.py               # Global constants and model registry
 ├── requirements.txt           # Python dependencies
-├── for_hproj/                 # H-Proj baseline experiments (see SCRIPTS_GUIDE.md)
-│   ├── SCRIPTS_GUIDE.md         # Detailed guide for H-Proj experiments
-│   ├── run_hproj.sh             # Run single H-Proj experiment
-│   ├── run_hproj_sweep.sh       # Run H-Proj sweep experiments
-│   ├── log_hproj_wandb.sh       # Upload H-Proj results to wandb
-│   ├── run_hproj_experiment.py  # Python script for H-Proj training
-│   ├── log_hproj_to_wandb.py    # Python script for wandb logging
-│   ├── convert_cvx_qcqp_for_hproj.py  # Convert QCQP datasets for H-Proj
-│   └── convert_noncvx_for_hproj.py    # Convert non-convex datasets for H-Proj
-├── hproj_repo/                # H-Proj implementation (git submodule)
 ├── bash_scripts/              # Experiment execution scripts
 │   ├── run_cvx_qcqp_single.sh   # Run convex QCQP experiments sequentially
 │   ├── run_cvx_qcqp_multi.sh    # Run convex QCQP experiments in parallel
@@ -74,14 +60,18 @@ SnareNet/
 │   └── run_cbf_multi.sh         # Run CBF safe control experiments in parallel
 ├── configs/                   # Hydra configuration files
 │   ├── config.yaml              # Main configuration
+│   ├── config_hproj.yaml        # H-Proj baseline configuration
 │   ├── config_opt.yaml          # Optimizer configuration
 │   ├── dataset/                 # Dataset-specific configurations
 │   ├── experiment/              # Experiment-specific configurations
 │   └── model/                   # Model-specific configurations
+│       ├── hproj.yaml             # H-Proj model configuration
+│       └── ...
 ├── models/                    # Model implementations
 │   ├── snarenet.py              # SnareNet implementation
 │   ├── dc3.py                   # DC3 baseline
-│   └── hardnetaff.py            # HardNetAff baseline
+│   ├── hardnetaff.py            # HardNetAff baseline
+│   └── hproj.py                 # H-Proj baseline (INN + HomeoProjNet)
 ├── datasets/                  # Dataset files
 │   ├── cvx_qcqp/                # Convex QCQP datasets
 │   ├── noncvx/                  # Non-convex datasets
@@ -134,20 +124,6 @@ Run CBF safe control experiments:
 bash bash_scripts/run_cbf_single.sh
 ```
 
-**Running H-Proj baseline experiments:**
-
-The H-Proj baseline has its own set of scripts in the `for_hproj/` directory. See [for_hproj/SCRIPTS_GUIDE.md](for_hproj/SCRIPTS_GUIDE.md) for detailed instructions.
-
-Quick start:
-```bash
-# Step 1: Run H-Proj sweep experiments
-cd for_hproj
-bash run_hproj_sweep.sh --prob_type cvx_qcqp  # or noncvx
-
-# Step 2: Upload results to wandb (configure script first)
-bash log_hproj_wandb.sh
-```
-
 **Note:** Results will be automatically logged to your Weights & Biases account.
 
 ### Step 2: Generate Plots and Tables
@@ -183,6 +159,21 @@ python3 run_experiment.py model=snarenet epochs=200 soft_epochs=50
 python3 run_experiment.py model=dc3 dataset=cvx_qcqp
 ```
 
+### Running H-Proj Baseline
+
+The H-Proj baseline uses a two-stage pipeline: first training a homeomorphic INN mapping (Stage 1), then training a BaseModel predictor (Stage 2), followed by bisection-based repair at inference.
+
+```bash
+# Run on convex QCQP dataset
+python3 run_hproj.py dataset=cvx_qcqp seed=123
+
+# Run on non-convex dataset
+python3 run_hproj.py dataset=noncvx seed=123
+
+# Skip Stage 1 and reuse existing homeoproj_module.pth
+python3 run_hproj.py dataset=cvx_qcqp model.skip_mapping=true seed=123
+```
+
 ### Running Traditional Optimization Solvers
 
 Run traditional optimization solvers for comparison (requires Gurobi):
@@ -216,9 +207,9 @@ The repository implements several constrained neural network architectures:
 - **SnareNet**: Our proposed flexible repair layer architecture
 - **DC3**: Deep Constraint Completion and Correction
 - **HardNetAff**: Hard constraint enforcement via affine transformations
-- **H-Proj**: Hierarchical projection layers (implementation in `hproj_repo/` submodule, experiments in `for_hproj/`)
+- **H-Proj**: Homeomorphic projection baseline (INN + bisection repair); implemented in [models/hproj.py](models/hproj.py), run via [run_hproj.py](run_hproj.py)
 
-Model configurations are in `configs/model/`. For H-Proj, refer to [for_hproj/SCRIPTS_GUIDE.md](for_hproj/SCRIPTS_GUIDE.md).
+Model configurations are in `configs/model/`.
 
 ## 📝 Citation
 

@@ -67,12 +67,10 @@ def generate(dataset_cfg: DictConfig) -> None:
     G = np.random.uniform(-1, 1, size=(num_ineq, num_var))
     H = np.random.uniform(0, 0.1,  size=(num_ineq, num_var))
     H = np.array([np.diag(H[i]) for i in range(num_ineq)])  # shape = (num_ineq, num_var, num_var)
-    L = np.ones((num_var)) * -10
-    U = np.ones((num_var)) * 10
     h = generate_valid_ineq_bd(A, H, G, X, margin=0.1)
 
     print('creating QCQP problem instance...')
-    problem = QCQP(Q, p, A, X, G, H, h, L, U)
+    problem = QCQP(Q, p, A, X, G, H, h)
     if opt_val_saved:
         print(f'Solving {num_examples} examples of convex QCQP with {num_var} variables, {num_eq} equality constraints, and {num_ineq} inequality constraints...')
         problem.opt_solve(solver_type='gurobipy')
@@ -100,8 +98,6 @@ def generate(dataset_cfg: DictConfig) -> None:
             'G': G,
             'H': H,
             'h': h,
-            'L': L,
-            'U': U,
         },
         'opt_sols': Y,
         'opt_vals': opt_vals,

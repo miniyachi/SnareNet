@@ -83,20 +83,20 @@ class DC3(nn.Module):
         super().__init__()
         self._data = data
         self._cfg = cfg
-        self._if_project = False
+        self._if_repair = True
 
         output_dim = data.ydim - data.neq if cfg.model.useCompl else data.ydim
         self._base = BaseModel(data, cfg, output_dim=output_dim)
         self._repair = DC3RepairLayer(data, cfg)
 
-    def set_projection(self, val=True):
-        self._if_project = val
+    def set_repair(self, val=True):
+        self._if_repair = val
 
     def forward(self, x):
         encoded_x = self._data.encode_input(x)
         out = self._base(encoded_x)
 
-        if self._if_project:
+        if self._if_repair:
             out = self._repair(out, x)
 
         return out

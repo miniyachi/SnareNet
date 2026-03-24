@@ -126,14 +126,14 @@ class SnareNet(nn.Module):
     def __init__(self, data, cfg):
         super().__init__()
         self._data = data
-        self._if_project = False
+        self._if_repair = True
 
         self._base = BaseModel(data, cfg)
 
         self._repair = SnareNetRepairLayer(data, cfg)
 
-    def set_projection(self, val=True):
-        self._if_project = val
+    def set_repair(self, val=True):
+        self._if_repair = val
 
     def set_eps(self, eps):
         self._repair.set_eps(eps)
@@ -148,7 +148,7 @@ class SnareNet(nn.Module):
         encoded_x = self._data.encode_input(x)
         out = self._base(encoded_x)
 
-        if self._if_project:
+        if self._if_repair:
             out = self._repair(out, x)
 
         return out

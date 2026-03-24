@@ -1,0 +1,45 @@
+# H-Proj model configuration
+# Source: https://arxiv.org/abs/2306.09292
+
+name: hproj
+hidden_size: 200          # BaseModel hidden size (same as other models)
+mapping_weights_path: null # set at runtime by run_hproj.py after Stage 1
+
+# Stage 1: INN homeomorphic mapping training parameters
+mapping_para:
+  n_samples: 1024          # number of initial x samples (in [0,1]^n_dim)
+  t_samples: 10000         # number of conditioning t samples (in [input_L, input_U])
+  bound: [0, 1]            # domain of INN input (unit cube)
+  scale_ratio: 1
+  shape: square
+  total_iteration: 20000
+  batch_size: 512
+  num_layer: 3
+  lr: 1.0e-4
+  lr_decay: 0.9
+  lr_decay_step: 1000
+  penalty_coefficient: 10
+  distortion_coefficient: 1
+  transport_coefficient: 0
+
+# Stage 2: BaseModel predictor (unsupervised soft-penalty) training parameters
+nn_para:
+  approach: unsupervise
+  total_iteration: 50000
+  batch_size: 512
+  lr: 1.0e-3
+  lr_decay: 0.9
+  lr_decay_step: 1000
+  objWeight: 0.1
+  softWeightInEqFrac: 10
+  softWeightEqFrac: 10
+
+# Homeomorphic bisection projection parameters (used at inference)
+proj_para:
+  corrTestMaxSteps: 100
+  corrBis: 0.9
+  corrEps: 1.0e-5
+
+# Skip flags for reusing pre-trained weights
+skip_mapping: false        # set to true to skip Stage 1 and load existing homeoproj_module.pth
+skip_nn: false             # set to true to skip Stage 2 and load existing homeoprojnet.pth

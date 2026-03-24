@@ -131,9 +131,9 @@ def run_test_exp(cfg: DictConfig):
     net = load_model_from_wandb(cfg, data, wandb_project, wandb_name)
     
     # Enable projection for testing (hard constraints)
-    if hasattr(net, 'set_projection'):
-        net.set_projection(True)
-        print("Projection enabled for testing.")
+    if hasattr(net, 'set_repair'):
+        net.set_repair(True)
+        print("Repair enabled for testing.")
     
     # Ensure model is in eval mode (should already be set, but double-check)
     net.eval()

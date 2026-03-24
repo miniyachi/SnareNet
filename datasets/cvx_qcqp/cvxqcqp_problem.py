@@ -19,7 +19,7 @@ class QCQP:
         s.t.       y^T H_i y + G_i^T y <= h_i, for i = 1, ... , m
                    Ay =  x
     """
-    def __init__(self, Q, p, A, X, G, H, h, L, U, valid_frac=0.0833, test_frac=0.0833):
+    def __init__(self, Q, p, A, X, G, H, h, valid_frac=0.0833, test_frac=0.0833):
         # n = variable dimension; m = number of inequality constraints; b = batch size
         self._Q = torch.tensor(Q)   # size = [n, n]
         self._p = torch.tensor(p)   # size = [n]
@@ -57,6 +57,13 @@ class QCQP:
             self._A_partial = self._A[:, self._partial_vars]
             self._A_other_inv = torch.inverse(self._A[:, self._other_vars])
 
+        # Variable and input bounds used by the H-Proj baseline only.
+        # QCQP has no explicit variable bounds; using large placeholders (same as noncvx).
+        self.L = torch.full((self._ydim,), -100.0)                 # (ydim,) variable lower bounds
+        self.U = torch.full((self._ydim,), 100.0)                  # (ydim,) variable upper bounds
+        self.input_L = self.trainX.min(dim=0).values - 0.1        # (xdim,) input parameter lower bounds
+        self.input_U = self.trainX.max(dim=0).values + 0.1        # (xdim,) input parameter upper bounds
+
     def __str__(self):
         return f'QCQP-{self.num}'
 
@@ -75,6 +82,10 @@ class QCQP:
         # Recreate derived tensors on the new device
         self._A_partial = self._A[:, self._partial_vars]
         self._A_other_inv = torch.inverse(self._A[:, self._other_vars])
+        self.L = self.L.to(device)
+        self.U = self.U.to(device)
+        self.input_L = self.input_L.to(device)
+        self.input_U = self.input_U.to(device)
         return self
 
     @property

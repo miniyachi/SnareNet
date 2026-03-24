@@ -47,4 +47,13 @@ for NUM_INEQ in $NUM_INEQ_VALUES; do
             seed=$SEED \
             wandb_project=$WANDB_PROJECT
     done
+
+    for SEED in $SEEDS; do
+        # Run hproj
+        CUDA_VISIBLE_DEVICES=$GPU python3 run_hproj.py \
+            dataset=$DATASET \
+            dataset.num_ineq=$NUM_INEQ \
+            seed=$SEED \
+            wandb_project=$WANDB_PROJECT
+    done
 done
