@@ -64,11 +64,11 @@ class AdaptiveRelaxation:
         # Find max violations for each constraint over training set
         with torch.no_grad():
             # Temporarily disable projection to get raw NN output
-            if not hasattr(net, 'set_projection'):
-                raise AttributeError("Network must have 'set_projection' method to use adaptive relaxation.")
-            
-            original_projection_state = net._if_project
-            net.set_projection(False)
+            if not hasattr(net, 'set_repair'):
+                raise AttributeError("Network must have 'set_repair' method to use adaptive relaxation.")
+
+            original_repair_state = net._if_repair
+            net.set_repair(False)
             
             # One pass through training data
             for _, Xtrain, _ in train_loader:
@@ -78,7 +78,7 @@ class AdaptiveRelaxation:
                 self.eps_initial = torch.maximum(violations, self.eps_initial)
             
             # Restore original projection state
-            net.set_projection(original_projection_state)
+            net.set_repair(original_repair_state)
 
     
     def _linear_decay(self, step, total_steps, initial_value):
@@ -218,8 +218,9 @@ def get_hyperparam_str(model_cfg) -> str:
         tolerance = model_cfg.get('tolerance', 1e-4)
         return f"tol{tolerance}"
     elif model_name == 'hproj':
-        proj_type = model_cfg.get('proj_type', "")
-        return proj_type
+        map_iter = model_cfg.mapping_para.total_iteration
+        nn_iter = model_cfg.nn_para.total_iteration
+        return f"map{map_iter}_nn{nn_iter}"
     elif model_name == 'optnet':
         solver_args = model_cfg.get('solver_args', None)
         if solver_args and solver_args.get('solve_method'):
@@ -238,7 +239,7 @@ def get_method_name(cfg: DictConfig) -> str:
     model_name = cfg.model.name
     hyperparams = get_hyperparam_str(cfg.model)
     soft_epochs = f"_soft{cfg.soft_epochs}" if cfg.get('soft_epochs', 0) > 0 else ""
-    method_name = f"{model_name}_{hyperparams}{soft_epochs}"
+    method_name = f"{model_name}_{hyperparams}{soft_epochs}".rstrip('_')
     return method_name
 
 
@@ -275,18 +276,20 @@ def setup_save_directory(cfg: DictConfig) -> str:
     Returns:
         save_dir: Path with structure "results/{probType}/{problemParams}/{model.name}/{hyperparams}/seed{N}"
     """
-    save_dir = os.path.join(
+    hyperparam_str = get_hyperparam_str(cfg.model)
+    path_parts = [
         'results',
         cfg.dataset.prob_type,
         get_problem_param_str(cfg.dataset),
         cfg.model.name,
-        get_hyperparam_str(cfg.model),
-        f"seed{cfg.seed}"
-    )
+    ]
+    if hyperparam_str:
+        path_parts.append(hyperparam_str)
+    path_parts.append(f"seed{cfg.seed}")
+    save_dir = os.path.join(*path_parts)
     os.makedirs(save_dir, exist_ok=True)
-    
+
     return save_dir
-    return method_name
 
 def load_data(dataset_cfg, device):
     """

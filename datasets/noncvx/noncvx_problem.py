@@ -54,6 +54,13 @@ class NonCvxProblem:
             self._C_partial = self._C[:, self._partial_vars]
             self._C_other_inv = torch.inverse(self._C[:, self._other_vars])
 
+        # Variable and input bounds used by the H-Proj baseline only.
+        # NonCvxProblem has no explicit variable bounds; using large placeholders.
+        self.L = torch.full((self._ydim,), -100.0)                # (ydim,) variable lower bounds
+        self.U = torch.full((self._ydim,), 100.0)                 # (ydim,) variable upper bounds
+        self.input_L = self.trainX.min(dim=0).values - 0.1        # (xdim,) input parameter lower bounds
+        self.input_U = self.trainX.max(dim=0).values + 0.1        # (xdim,) input parameter upper bounds
+
     def __str__(self):
         return f'NonCvxProblem-{self.num}'
 
@@ -71,6 +78,10 @@ class NonCvxProblem:
         # Recreate derived tensors on the new device
         self._C_partial = self._C[:, self._partial_vars]
         self._C_other_inv = torch.inverse(self._C[:, self._other_vars])
+        self.L = self.L.to(device)
+        self.U = self.U.to(device)
+        self.input_L = self.input_L.to(device)
+        self.input_U = self.input_U.to(device)
         return self
 
     @property

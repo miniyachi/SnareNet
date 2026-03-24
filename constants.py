@@ -5,6 +5,7 @@ from datasets.noncvx.noncvx_problem import NonCvxProblem
 from models.snarenet import SnareNet
 from models.hardnetaff import HardNetAff
 from models.dc3 import DC3
+from models.hproj import HomeoProjNet
 
 PROBTYPE_TO_CLASS = {
     'cvx_qcqp': QCQP,
@@ -16,6 +17,7 @@ MODELNAME_TO_CLASS = {
     'hardnetaff': HardNetAff,
     'dc3': DC3,
     'snarenet': SnareNet,
+    'hproj': HomeoProjNet,
 }
 
 
